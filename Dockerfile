@@ -15,4 +15,4 @@ COPY model.pkl .
 EXPOSE 8080
 
 # Run the app
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
