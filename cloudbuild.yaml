@@ -3,7 +3,7 @@ steps:
     args:
       [
         'build',
-        '-t', 'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app',
+        '-t', 'us-east1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app',
         '.'
       ]
     id: 'Build Docker image'
@@ -12,7 +12,7 @@ steps:
     args:
       [
         'push',
-        'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app'
+        'us-east1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app'
       ]
     id: 'Push to Artifact Registry'
 
