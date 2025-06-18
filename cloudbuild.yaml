@@ -1,31 +1,36 @@
-
-
 steps:
-  # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb', '.']
-
-  # Push the image to Google Container Registry
+    args:
+      [
+        'build',
+        '-t', 'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app:$SHORT_SHA',
+        '.'
+      ]
+    id: 'Build Docker image'
+ 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb']
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app:$SHORT_SHA'
+      ]
+    id: 'Push to Artifact Registry'
 
-  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
-      - 'run'
-      - 'deploy'
-      - 'ml-sales-prediction-application'
-      - '--image'
-      - 'gcr.io/us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb'
-      - '--region'
-      - 'us-central1' # Change as per your region
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-
-images:
-  - 'gcr.io/us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction'
+      [
+        'run', 'deploy', 'cloud-run-rb-app',
+        '--image', 'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/ml-sales-prediction-rb/cloud-run-rb-app:$SHORT_SHA',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars', 'VERSION=$SHORT_SHA'
+      ]
+    id: 'Deploy to Cloud Run'
 
 options:
-    logging: CLOUD_LOGGING_ONLY
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+
+substitutions:
+  _SERVICE_NAME: cloud-run-rb-app
